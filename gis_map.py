@@ -8,7 +8,7 @@ from streamlit_folium import st_folium
 st.set_page_config(layout="wide")
 st.title("Peta Persebaran Pemberitaan Rawan Kriminal")
 
-df = pd.read_excel("dataClean.xlsx")
+df = pd.read_excel("fix_dataa.xlsx")
 df = pd.DataFrame(df)
 
 #buat filter tahun sama provinsi
