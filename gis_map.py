@@ -8,49 +8,42 @@ from streamlit_folium import st_folium
 st.set_page_config(layout="wide")
 st.title("Peta Persebaran Pemberitaan Rawan Kriminal")
 
-df = pd.read_excel("fix_data.xlsx")
+df = pd.read_excel("dataClean.xlsx")
 df = pd.DataFrame(df)
 
-# =========================
-# FILTER TAHUN & PROVINSI
-# =========================
-
+#buat filter tahun sama provinsi
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
 list_tahun = df["tahun"].dropna().astype(int).unique()
 list_provinsi = df["provinsi"].dropna().astype(str).unique()
 
-
 with st.container(border=True):
     col3, col4 = st.columns([2, 4])
     with col3:
-        tahun_selected = st.multiselect(
+        tahun_selected = st.pills(
             "Pilih Tahun",
             options=list_tahun,
-            key="tahun_selected",
+            default=list_tahun,
+            selection_mode="multi",
         )
         
     
     with col4:
-
-        provinsi_selected = st.multiselect(
-            "Pilih Provinsi",
-            options=list_provinsi,
-            key="provinsi_selected",
-        )
         
-    with st.container(border=False):
-        col5, col6 = st.columns([2,4])
-        with col5:
-            st.button("Semua Tahun",on_click=lambda: st.session_state.update({"tahun_selected": list(list_tahun)}))
-        with col6:
+        with st.popover("Pilih Provinsi", width="stretch"):
+            provinsi_selected = st.multiselect(
+                "Pilih Provinsi",
+                options=list_provinsi,
+                default=list_provinsi,
+                key="provinsi_selected",
+            )
+            
             st.button("Semua Provinsi",on_click=lambda: st.session_state.update({"provinsi_selected": list(list_provinsi)}))
         
-
-    
-    dftahun = df[
-        (df["tahun"].isin(tahun_selected)) &
-        (df["provinsi"].isin(provinsi_selected))
-    ]
+#data yg difilter user
+dftahun = df[
+    (df["tahun"].isin(tahun_selected)) &
+    (df["provinsi"].isin(provinsi_selected))
+]
 
 #Insightt 
 
@@ -68,7 +61,7 @@ if len(prov_summary) > 0:
     kriminal_dominan = dftahun["jenis_kriminal"].value_counts().idxmax()  
 
     with st.container(border=True):  
-        if len(provinsi_selected) == 1 and len(tahun_selected) == 1:
+        if len(provinsi_selected) == 1 and len(tahun_selected) == 1 or (len(provinsi_selected) == 1 and len(tahun_selected) > 1):
             st.markdown(  
                 f"""
                 ###  Insight Provinsi {provinsi_selected[0]}
@@ -100,12 +93,10 @@ if len(prov_summary) > 0:
                 """
             )
 
-# =========================
-# DATA UNTUK MAP
-# =========================
+#untuk map
 
 grouped_kota = dftahun.groupby("provinsi")["judul"].count().reset_index(name='jumlah')
-df_map = pd.DataFrame(grouped_kota)   
+df_map = pd.DataFrame(grouped_kota)
 
 def kategori(jumlah):
     if jumlah > 40:
@@ -127,12 +118,8 @@ kategori_map = {
 }
 df_map["level"] = df_map["kategori"].map(kategori_map)
 
-# =========================
-# MAP & PANEL
-# =========================
 
 col1, col2 = st.columns([5, 2])
-
 with col1:
     m = folium.Map(
         location=[-2.5, 118],

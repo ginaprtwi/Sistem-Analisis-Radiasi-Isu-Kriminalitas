@@ -9,7 +9,7 @@ st.title("Visualisasi Data Kriminal")
 # =======================
 # LOAD DATA
 # =======================
-df = pd.read_excel("fix_data.xlsx")
+df = pd.read_excel("fix_dataa.xlsx")
 
 # Rapikan nama kolom
 df.columns = df.columns.str.strip().str.replace(" ", "_")

@@ -4,7 +4,7 @@ import pandas as pd
 st.title("Dashboard")
 st.caption("Ringkasan isu kriminal yang sering diberitakan di Indonesia berdasarkan media online Detik.com (2024-2025)")
 
-df = pd.read_excel("fix_data.xlsx")
+df = pd.read_excel("fix_dataa.xlsx")
 
 jenis_terbanyak = df["jenis_kriminal"].value_counts().idxmax().capitalize()
 kota_terbanyak = df["kota"].value_counts().idxmax().capitalize()
