@@ -202,6 +202,18 @@ df = df[df["sumber"].apply(lambda x: not any(s in str(x) for s in sumber_drop))]
 # drop judul tanpa kota
 df = df[(df["kota"] != "lainnya")].reset_index(drop=True)
 
+kata_kunci_negatif = [ "kabur", "tidak tertangkap", "menghilang", "merajalela", "menyerang", "korupsi", "kriminal", "razia" ] 
+kata_kunci_positif = [ "berhasil ditangkap", "ditangkap", "tersangka diamankan","tertangkap" ]
+def label_sentimen(judul):
+    if any(k.lower() in judul.lower() for k in kata_kunci_positif):
+        return "positif"
+    elif any(k.lower() in judul.lower() for k in kata_kunci_negatif):
+        return "negatif"
+    else:
+        return "netral"
+
+df["sentimen"] = df["judul"].apply(label_sentimen)
+
 
 df = df[df["tahun"] != 2026].reset_index(drop=True)
 
