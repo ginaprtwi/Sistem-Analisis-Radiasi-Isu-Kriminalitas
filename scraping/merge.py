@@ -2,7 +2,7 @@ import pandas as pd
 import os
 
 # Folder tempat semua Excel
-folder_path = "scraping/detik.com"
+folder_path = "scraping/detik.com" 
 
 # List semua file Excel di folder
 excel_files = [f for f in os.listdir(folder_path) if f.endswith(".xlsx")]

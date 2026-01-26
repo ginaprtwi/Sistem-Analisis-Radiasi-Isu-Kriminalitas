@@ -60,18 +60,21 @@ kata_kunci = {
     "kekerasan": [
         "aniaya","dianiaya","penganiayaan",
         "keroyok","pengeroyokan","dikeroyok",
-        "pukul","pemukulan",
-        "bacok","pembacokan",
-        "tusuk","penusukan",
-        "tembak","penembakan",
-        "kdrt","aniaya istri","aniaya suami","aniaya anak", "kekerasan","pengancaman","ancam",
+        "pukul","pemukulan","bacok","pembacokan",
+        "tusuk","penusukan","tembak","penembakan",
+        "kdrt","aniaya istri","aniaya suami",
+        "aniaya anak", "kekerasan","pengancaman","ancam",
         "intimidasi","brutal"
     ],
 
     "pencurian": [
         "curi","pencurian","maling",
         "jambret","rampok","perampokan",
-        "begal","bajing loncat", "dirampas","merampas","scam","penipuan","phising", "pinjol", "tppu", "bandit", "data fiktif", "menipu", "tertipu","curanmor", "raib", "copet", "perampas", "pembobolan"
+        "begal","bajing loncat", "dirampas",
+        "merampas","scam","penipuan","phising", 
+        "pinjol", "tppu", "bandit", "data fiktif", 
+        "menipu", "tertipu","curanmor", "raib", "copet", 
+        "perampas", "pembobolan"
     ],
 
     "narkoba": [
@@ -86,9 +89,27 @@ kata_kunci = {
     ]
 }
 
+#kata kunci framing media
+kamus_sentimen = {
+    "positif": [
+        "berhasil ditangkap",
+        "ditangkap",
+        "tersangka diamankan",
+        "tertangkap"
+    ],
+    "negatif": [
+        "kabur",
+        "tidak tertangkap",
+        "menghilang",
+        "merajalela",
+        "menyerang",
+        "korupsi",
+        "kriminal",
+        "razia"
+    ]
+}
 #kata kunci yg nanti nya bakal di drop
 kata_drop = [
-    "razia","operasi","sidak","imbauan","himbauan",
     "sosialisasi","edukasi","kampanye",
     "kunjungan","peresmian","rapat","apel",
     "pengamanan","siaga","lalu lintas","kecelakaan",
@@ -101,85 +122,221 @@ sumber_drop = [
 
 #kata kunci kota
 kotaxprov = {
+
+    # =====================
     # DKI Jakarta
-    "jakarta": "Jakarta Raya", "jakpus": "Jakarta Raya", "jaksel": "Jakarta Raya",
-    "jakbar": "Jakarta Raya", "jaktim": "Jakarta Raya", "jakut": "Jakarta Raya",
-    "kepulauan seribu": "DJakarta Raya",
-    
+    # =====================
+    "jakarta": "Jakarta Raya",
+    "dki": "Jakarta Raya",
+    "jakpus": "Jakarta Raya",
+    "jaksel": "Jakarta Raya",
+    "jakbar": "Jakarta Raya",
+    "jaktim": "Jakarta Raya",
+    "jakut": "Jakarta Raya",
+    "kep seribu": "Jakarta Raya",
+    "kepulauan seribu": "Jakarta Raya",
+
+    # =====================
     # Jawa Barat
-    "bandung": "Jawa Barat", "bekasi": "Jawa Barat", "bogor": "Jawa Barat",
-    "depok": "Jawa Barat", "cimahi": "Jawa Barat", "garut": "Jawa Barat",
-    "subang": "Jawa Barat", "purwakarta": "Jawa Barat", "karawang": "Jawa Barat",
-    "tasikmalaya": "Jawa Barat", "cirebon": "Jawa Barat", "sumedang": "Jawa Barat",
-    "sukabumi": "Jawa Barat", "ciamis": "Jawa Barat", "majalah": "Jawa Barat",
-    
+    # =====================
+    "jabar": "Jawa Barat",
+    "bandung": "Jawa Barat",
+    "kab bandung": "Jawa Barat",
+    "bandung barat": "Jawa Barat",
+    "bekasi": "Jawa Barat",
+    "kab bekasi": "Jawa Barat",
+    "bogor": "Jawa Barat",
+    "kab bogor": "Jawa Barat",
+    "depok": "Jawa Barat",
+    "cimahi": "Jawa Barat",
+    "garut": "Jawa Barat",
+    "tasik": "Jawa Barat",
+    "tasikmalaya": "Jawa Barat",
+    "cirebon": "Jawa Barat",
+    "kab cirebon": "Jawa Barat",
+    "sukabumi": "Jawa Barat",
+    "sumedang": "Jawa Barat",
+    "subang": "Jawa Barat",
+    "karawang": "Jawa Barat",
+    "purwakarta": "Jawa Barat",
+    "indramayu": "Jawa Barat",
+    "majalengka": "Jawa Barat",
+    "ciamis": "Jawa Barat",
+
+    # =====================
     # Banten
-    "tangerang": "Banten", "tangsel": "Banten", "tangerang selatan": "Banten",
-    "serang": "Banten", "cilegon": "Banten", "pandeglang": "Banten", "lebak": "Banten",
-    
+    # =====================
+    "banten": "Banten",
+    "tangerang": "Banten",
+    "kab tangerang": "Banten",
+    "tangsel": "Banten",
+    "tangerang selatan": "Banten",
+    "serang": "Banten",
+    "cilegon": "Banten",
+    "lebak": "Banten",
+    "pandeglang": "Banten",
+
+    # =====================
     # Jawa Tengah
-    "semarang": "Jawa Tengah", "solo": "Jawa Tengah", "surakarta": "Jawa Tengah",
-    "purwokerto": "Jawa Tengah", "pekalongan": "Jawa Tengah", "magelang": "Jawa Tengah",
-    "tegal": "Jawa Tengah", "salatiga": "Jawa Tengah", "cilacap": "Jawa Tengah",
-    "kudus": "Jawa Tengah", "jepara": "Jawa Tengah", "karanganyar": "Jawa Tengah",
-    "boyolali": "Jawa Tengah", "wonogiri": "Jawa Tengah", "karanganyar": "Jawa Tengah",
-    
+    # =====================
+    "jateng": "Jawa Tengah",
+    "semarang": "Jawa Tengah",
+    "solo": "Jawa Tengah",
+    "surakarta": "Jawa Tengah",
+    "purwokerto": "Jawa Tengah",
+    "cilacap": "Jawa Tengah",
+    "pekalongan": "Jawa Tengah",
+    "tegal": "Jawa Tengah",
+    "magelang": "Jawa Tengah",
+    "salatiga": "Jawa Tengah",
+    "kudus": "Jawa Tengah",
+    "jepara": "Jawa Tengah",
+    "pati": "Jawa Tengah",
+    "demak": "Jawa Tengah",
+    "klaten": "Jawa Tengah",
+    "boyolali": "Jawa Tengah",
+    "wonogiri": "Jawa Tengah",
+
+    # =====================
     # DI Yogyakarta
-    "yogyakarta": "DI Yogyakarta", "jogja": "DI Yogyakarta", "sleman": "DI Yogyakarta",
-    "bantul": "DI Yogyakarta", "kulon progo": "DI Yogyakarta", "gunungkidul": "DI Yogyakarta",
-    
+    # =====================
+    "diy": "DI Yogyakarta",
+    "jogja": "DI Yogyakarta",
+    "yogyakarta": "DI Yogyakarta",
+    "sleman": "DI Yogyakarta",
+    "bantul": "DI Yogyakarta",
+    "kulon progo": "DI Yogyakarta",
+    "gunungkidul": "DI Yogyakarta",
+
+    # =====================
     # Jawa Timur
-    "surabaya": "Jawa Timur", "malang": "Jawa Timur", "sidoarjo": "Jawa Timur",
-    "kediri": "Jawa Timur", "blitar": "Jawa Timur", "mojokerto": "Jawa Timur",
-    "pasuruan": "Jawa Timur", "probolinggo": "Jawa Timur", "jember": "Jawa Timur",
-    "banyuwangi": "Jawa Timur", "madiun": "Jawa Timur", "ponorogo": "Jawa Timur",
-    
-    # Sumatera Utara
-    "medan": "Sumatera Utara", "binjai": "Sumatera Utara", "pematangsiantar": "Sumatera Utara",
-    "tanjungbalai": "Sumatera Utara", "sibolga": "Sumatera Utara", "langkat": "Sumatera Utara",
-    
-    # Sumatera Selatan
-    "palembang": "Sumatera Selatan", "lubuklinggau": "Sumatera Selatan", "prabumulih": "Sumatera Selatan",
-    
-    # Riau
-    "pekanbaru": "Riau", "dumai": "Riau", "selatpanjang": "Riau",
-    
-    # Sumatera Barat
-    "padang": "Sumatera Barat", "solok": "Sumatera Barat", "bukittinggi": "Sumatera Barat",
-    "payakumbuh": "Sumatera Barat", "pariaman": "Sumatera Barat",
-    
-    # Kepulauan Riau
-    "batam": "Kepulauan Riau", "tanjungpinang": "Kepulauan Riau", "bintan": "Kepulauan Riau",
-    
-    # Sulawesi Selatan
-    "makassar": "Sulawesi Selatan", "parepare": "Sulawesi Selatan", "bulukumba": "Sulawesi Selatan",
-    "gowa": "Sulawesi Selatan", "bantaeng": "Sulawesi Selatan", "pinrang":"Sulawesi Selatan",
-    
-    # Bali
-    "denpasar": "Bali", "bali": "Bali", "tabanan": "Bali", "karangasem": "Bali",
-    "klungkung": "Bali", "bangli": "Bali", "gianyar": "Bali", "jembrana": "Bali",
-    
-    # Kalimantan Timur
-    "balikpapan": "Kalimantan Timur", "samarinda": "Kalimantan Timur", "bontang": "Kalimantan Timur",
-    "kutai": "Kalimantan Timur", "berau": "Kalimantan Timur",
-    
-    # Kalimantan Selatan
-    "banjarmasin": "Kalimantan Selatan", "martapura": "Kalimantan Selatan", "tanah laut": "Kalimantan Selatan",
-    
-    # Kalimantan Barat
-    "pontianak": "Kalimantan Barat", "singkawang": "Kalimantan Barat", "sanggau": "Kalimantan Barat",
-    
-    # Sulawesi Utara
-    "manado": "Sulawesi Utara", "bitung": "Sulawesi Utara", "tomohon": "Sulawesi Utara",
-    
+    # =====================
+    "jatim": "Jawa Timur",
+    "surabaya": "Jawa Timur",
+    "sby": "Jawa Timur",
+    "malang": "Jawa Timur",
+    "kab malang": "Jawa Timur",
+    "sidoarjo": "Jawa Timur",
+    "gresik": "Jawa Timur",
+    "mojokerto": "Jawa Timur",
+    "kediri": "Jawa Timur",
+    "blitar": "Jawa Timur",
+    "pasuruan": "Jawa Timur",
+    "probolinggo": "Jawa Timur",
+    "jember": "Jawa Timur",
+    "banyuwangi": "Jawa Timur",
+    "madiun": "Jawa Timur",
+    "ponorogo": "Jawa Timur",
+    "tuban": "Jawa Timur",
+    "lamongan": "Jawa Timur",
+
+    # =====================
+    # Sumatera (umum media)
+    # =====================
+    "sumut": "Sumatera Utara",
+    "medan": "Sumatera Utara",
+    "binjai": "Sumatera Utara",
+    "siantar": "Sumatera Utara",
+
+    "sumsel": "Sumatera Selatan",
+    "palembang": "Sumatera Selatan",
+
+    "sumbar": "Sumatera Barat",
+    "padang": "Sumatera Barat",
+    "bukittinggi": "Sumatera Barat",
+
+    "riau": "Riau",
+    "pekanbaru": "Riau",
+    "dumai": "Riau",
+
+    "kepri": "Kepulauan Riau",
+    "batam": "Kepulauan Riau",
+    "tanjungpinang": "Kepulauan Riau",
+
+    "aceh": "Aceh",
+    "banda aceh": "Aceh",
+    "lhokseumawe": "Aceh",
+
+    "lampung": "Lampung",
+    "bandar lampung": "Lampung",
+
+    # =====================
+    # Kalimantan
+    # =====================
+    "kaltim": "Kalimantan Timur",
+    "balikpapan": "Kalimantan Timur",
+    "samarinda": "Kalimantan Timur",
+
+    "kalsel": "Kalimantan Selatan",
+    "banjarmasin": "Kalimantan Selatan",
+
+    "kalbar": "Kalimantan Barat",
+    "pontianak": "Kalimantan Barat",
+
+    "kalteng": "Kalimantan Tengah",
+    "palangkaraya": "Kalimantan Tengah",
+
+    "kalut": "Kalimantan Utara",
+    "tarakan": "Kalimantan Utara",
+
+    # =====================
+    # Sulawesi
+    # =====================
+    "sulsel": "Sulawesi Selatan",
+    "makassar": "Sulawesi Selatan",
+    "gowa": "Sulawesi Selatan",
+
+    "sulteng": "Sulawesi Tengah",
+    "palu": "Sulawesi Tengah",
+
+    "sulut": "Sulawesi Utara",
+    "manado": "Sulawesi Utara",
+
+    "sultra": "Sulawesi Tenggara",
+    "kendari": "Sulawesi Tenggara",
+
+    # =====================
+    # Bali & Nusa Tenggara
+    # =====================
+    "bali": "Bali",
+    "denpasar": "Bali",
+    "badung": "Bali",
+
+    "ntb": "Nusa Tenggara Barat",
+    "mataram": "Nusa Tenggara Barat",
+
+    "ntt": "Nusa Tenggara Timur",
+    "kupang": "Nusa Tenggara Timur",
+
+    # =====================
     # Papua
-    "jayapura": "Papua", "merauke": "Papua", "biak": "Papua", "nabire": "Papua",
-    
-    # Provinsi tambahan kota besar
-    "bengkulu": "Bengkulu", "lhokseumawe": "Aceh", "meulaboh": "Aceh", "aceh besar": "Aceh",
-    "palangkaraya": "Kalimantan Tengah", "sampit": "Kalimantan Tengah", "tarakan": "Kalimantan Utara",
-    "toli-toli": "Sulawesi Tengah", "palu": "Sulawesi Tengah", "kendari": "Sulawesi Tenggara",
+    # =====================
+    "papua": "Papua",
+    "jayapura": "Papua",
+    "merauke": "Papua",
+
+    # =====================
+# Jambi
+# =====================
+"jambi": "Jambi",
+"prov jambi": "Jambi",
+"kota jambi": "Jambi",
+"muaro jambi": "Jambi",
+"muara jambi": "Jambi",
+"batanghari": "Jambi",
+"tebo": "Jambi",
+"bungo": "Jambi",
+"tanjab barat": "Jambi",
+"tanjab timur": "Jambi",
+"tanjung jabung barat": "Jambi",
+"tanjung jabung timur": "Jambi",
+"sarolangun": "Jambi",
+"merangin": "Jambi",
+"kerinci": "Jambi",
+"sungai penuh": "Jambi",
+
 }
+
 
 #buat kolom baru 
 df["kota"] = df["judul"].apply(
@@ -194,6 +351,12 @@ df["jenis_kriminal"] = df["judul"].apply(
     lambda x: next((key for key, kws in kata_kunci.items() if any(kw in x for kw in kws)), "lainnya")
 )
 
+df["sentimen"] = df["judul"].apply(
+    lambda x: "Positif" if any(k in str(x).lower() for k in kamus_sentimen["positif"])
+    else "Negatif" if any(k in str(x).lower() for k in kamus_sentimen["negatif"])
+    else "Netral"
+)
+
 #drop judul bukan kriminal
 df = df[df["judul"].apply(lambda x: not any(k in str(x) for k in kata_drop))]
 df = df[df["sumber"].apply(lambda x: not any(s in str(x) for s in sumber_drop))]
@@ -201,19 +364,6 @@ df = df[df["sumber"].apply(lambda x: not any(s in str(x) for s in sumber_drop))]
 
 # drop judul tanpa kota
 df = df[(df["kota"] != "lainnya")].reset_index(drop=True)
-
-kata_kunci_negatif = [ "kabur", "tidak tertangkap", "menghilang", "merajalela", "menyerang", "korupsi", "kriminal", "razia" ] 
-kata_kunci_positif = [ "berhasil ditangkap", "ditangkap", "tersangka diamankan","tertangkap" ]
-def label_sentimen(judul):
-    if any(k.lower() in judul.lower() for k in kata_kunci_positif):
-        return "positif"
-    elif any(k.lower() in judul.lower() for k in kata_kunci_negatif):
-        return "negatif"
-    else:
-        return "netral"
-
-df["sentimen"] = df["judul"].apply(label_sentimen)
-
 
 df = df[df["tahun"] != 2026].reset_index(drop=True)
 

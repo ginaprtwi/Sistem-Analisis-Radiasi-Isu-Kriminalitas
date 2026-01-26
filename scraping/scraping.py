@@ -67,5 +67,5 @@ file_path = os.path.join(folder_path, f"{nama_file}.xlsx")
 df = pd.DataFrame(all_data)
 df.to_excel(file_path, index=False, engine="openpyxl")
 
-print(f"penData tersimpan di {nama_file}.xlsx")
+print(f"Data tersimpan di {nama_file}.xlsx")
 

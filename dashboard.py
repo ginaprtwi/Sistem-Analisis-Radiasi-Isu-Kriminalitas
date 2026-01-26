@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 
 st.title("Dashboard")
-st.caption("Ringkasan isu kriminal yang sering diberitakan di Indonesia berdasarkan media online Detik.com (2024-2025)")
+st.text("Ringkasan isu kriminal yang sering diberitakan di Indonesia berdasarkan media online Detik.com (2024-2025)")
 
 df = pd.read_excel("fix_dataa.xlsx")
 
@@ -24,6 +24,8 @@ tren_kota = df["kota"].value_counts().idxmax()
 delta_kota = kota_2025.get(tren_kota) - kota_2024.get(tren_kota)
 delta_persen = ((delta_kota / kota_2024.get(tren_kota, 1)) * 100)
 
+df["tanggal"] = pd.to_datetime(df["tanggal"], errors="coerce")
+jenis_terbanyak = df["jenis_kriminal"].value_counts().idxmax()
 topik = df[df["jenis_kriminal"] == jenis_terbanyak]
 topik = topik.sort_values("tanggal", ascending=False)
 rekomendasi = topik.head(3)
@@ -49,31 +51,17 @@ with col4:
         st.caption("Sumber Berita Teraktif")
         st.markdown(f"**{sumber_teraktif}**")
 
-col1, col2 = st.columns(2)
-with col1:
-    with st.container(border=True):
-        st.caption("Tren Isu 2024-2025")
-        st.metric(
-            label="Jumlah Data Tahun 2025",
-            value=f"{ambil_2025:,}",
-            delta=f"{delta_persen:.2f}%",
-            delta_color="normal",
-            width="content"
-        )  
-with col2:
-    with st.container(border=True):
-        st.caption("Tren Kecenderungan Framing Pemberitaan 24-25")
-        st.metric(
-            label="Negatif",
-            value=f"{ambil_2025:,}",
-            delta=f"{delta_persen:.2f}%",
-            delta_color="normal",
-            width="content"
-        ) 
-
 with st.container(border=True):
-    st.caption("Rekomendasi Berita berdasarkan isu dominan")
-    for i in range(len(rekomendasi)):
-        judul = rekomendasi["judul"].values[i]
-        link  = rekomendasi["link"].values[i]
-        st.markdown(f"{i+1}. [{judul}]({link})")
+    st.text("Rekomendasi Berita berdasarkan isu dominan")
+
+    if rekomendasi.empty:
+        st.info("Tidak ada rekomendasi berita untuk ditampilkan.")
+    else:
+        for _, row in rekomendasi.iterrows():
+            with st.container(border=True):
+                col1, col2 = st.columns([3, 1])  
+            with col1:
+                st.markdown(f"**{row['judul']}**")
+            with col2:
+                st.markdown(f"[Baca selengkapnya]({row['link']})")
+        

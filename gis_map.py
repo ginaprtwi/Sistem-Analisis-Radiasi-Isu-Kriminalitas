@@ -4,7 +4,6 @@ import folium
 from streamlit_folium import st_folium
 
 
-
 st.set_page_config(layout="wide")
 st.title("Peta GIS")
 st.text("Peta Persebaran Pemberitaan Isu Kriminalitas berdasarkan Detik.com ")
