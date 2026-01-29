@@ -1,16 +1,14 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 st.set_page_config(layout="wide")
 st.title("Isu & Wilayah Dominan")
-st.text(
-    "Visualisasi ini membantu menentukan prioritas isu kriminal dan wilayah yang perlu dipantau "
-    "berdasarkan intensitas pemberitaan kriminalitas Detik.com"
-)
+st.text("Visualisasi ini menunjukkan isu kriminal dan wilayah yang paling sering diberitakan, membantu memprioritaskan pemantauan berdasarkan intensitas berita.")
 
 # Load data
-df = pd.read_excel("fix_data.xlsx")
+df = pd.read_excel("data/fix_data.xlsx")
 
 # --- Filter Tahun ---
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
@@ -38,19 +36,8 @@ else:
 
 # --- Total kasus ---
 total_kasus = len(dftahun)
-
-grouped_jenis = (
-    dftahun.groupby("jenis_kriminal")["judul"]
-    .count()
-    .sort_values(ascending=False)
-    if not dftahun.empty else pd.Series(dtype=int)
-)
-grouped_prov = (
-    dftahun.groupby("provinsi")["judul"]
-    .count()
-    .sort_values(ascending=False)
-    if not dftahun.empty else pd.Series(dtype=int)
-)
+grouped_jenis = (dftahun.groupby("jenis_kriminal")["judul"].count().sort_values(ascending=False) if not dftahun.empty else pd.Series(dtype=int))
+grouped_prov = (dftahun.groupby("provinsi")["judul"].count().sort_values(ascending=False) if not dftahun.empty else pd.Series(dtype=int))
 
 kriminal_dominan = grouped_jenis.idxmax() if not grouped_jenis.empty else "-"
 top_prov_nama = grouped_prov.idxmax() if not grouped_prov.empty else "-"
@@ -58,15 +45,13 @@ top_prov_val = grouped_prov.max() if not grouped_prov.empty else 0
 bottom_prov_nama = grouped_prov.idxmin() if not grouped_prov.empty else "-"
 
 # --- Grafik ---
-st.subheader(f"Grafik Isu Kriminal ({label_waktu})")
-
 with st.container(border=True):
+    st.markdown(f"**Isu & Wilayah Dominan({label_waktu})**")
     col1, col2 = st.columns(2)
 
     # --- Bar Chart Jenis Kriminal ---
     with col1:
         fig1, ax1 = plt.subplots(figsize=(10, 7))
-
         if not dftahun.empty:
             df_pivot = dftahun.pivot_table(
                 index="jenis_kriminal",
@@ -75,28 +60,29 @@ with st.container(border=True):
                 aggfunc="count"
             ).fillna(0)
 
-            # --- Sorting berdasarkan total isu ---
+            # Sorting berdasarkan total isu
             df_pivot['total'] = df_pivot.sum(axis=1)
-            df_pivot = df_pivot.sort_values(by='total', ascending=False)
-            df_pivot = df_pivot.drop(columns='total')
+            df_pivot = df_pivot.sort_values(by='total', ascending=False).drop(columns='total')
 
+            # WARNA LUCU PERSIS SUMBER
+            warna = plt.cm.Paired(np.linspace(0, 1, df_pivot.shape[1]))
             df_pivot.plot(
                 kind="bar",
                 stacked=True,
                 ax=ax1,
-                edgecolor="black"
+                edgecolor="black",
+                color=warna
             )
 
         ax1.set_title("Distribusi Jenis Kriminal")
         ax1.set_ylabel("Jumlah Isu")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
-        st.pyplot(fig1)
+        st.pyplot(fig1, use_container_width=False)
 
     # --- Line Chart Top 10 Provinsi ---
     with col2:
         fig2, ax2 = plt.subplots(figsize=(10, 7))
-
         if not grouped_prov.empty:
             # ambil top 10 provinsi & sort descending
             top_10_p = grouped_prov.head(10).sort_values(ascending=False).index
@@ -112,11 +98,15 @@ with st.container(border=True):
             # urutkan index sesuai top 10
             df_pivot_prov = df_pivot_prov.reindex(top_10_p)
 
-            for col in df_pivot_prov.columns:
+            warna_line = plt.cm.Paired(np.linspace(0,1,len(df_pivot_prov.columns)))
+            markers = ['o','s','D','^','v','<','>','p','*','H']  # marker lucu
+
+            for i, col in enumerate(df_pivot_prov.columns):
                 ax2.plot(
                     df_pivot_prov.index,
                     df_pivot_prov[col],
-                    marker="o",
+                    marker=markers[i % len(markers)],
+                    color=warna_line[i],
                     label=str(col)
                 )
 
@@ -126,23 +116,21 @@ with st.container(border=True):
             plt.xticks(rotation=45, ha="right")
             ax2.grid(True, linestyle="--", alpha=0.5)
             plt.tight_layout()
-            st.pyplot(fig2)
+            st.pyplot(fig2, use_container_width=False)
 
 # --- Insight ---
 with st.container(border=True):
-    st.markdown(f"### Insight ({label_waktu})")
-    
+    st.markdown(f"**Insight ({label_waktu})**")
     if total_kasus == 0:
         st.markdown(
             "Tidak terdapat data yang dapat dianalisis karena **belum ada tahun yang dipilih**."
         )
     else:
-        st.markdown(f"""
-Berdasarkan hasil analisis pada **{label_waktu}**, tercatat **{total_kasus} isu kriminalitas** yang diberitakan oleh Detik.com.  
+        st.info(
+    f"ℹ️ Berdasarkan hasil analisis pada **{label_waktu}**, tercatat **{total_kasus}** isu kriminalitas yang diberitakan oleh Detik.com. "
+    f"Isu kriminal yang paling dominan adalah **{kriminal_dominan}**, dengan **{top_prov_nama}** sebagai wilayah yang paling sering diberitakan "
+    f"**({top_prov_val}** isu), sementara **{bottom_prov_nama}** memiliki intensitas pemberitaan terendah. "
+    "Temuan ini berguna untuk mengidentifikasi pola dominasi isu dan wilayah dalam pemberitaan kriminalitas, terutama untuk wilayah yang jarang terekspos media."
+)
 
-🔹 **Jenis kriminal dominan:** {kriminal_dominan}  
-
-🔹 **Wilayah paling sering diberitakan:** {top_prov_nama} ({top_prov_val} isu)  
-
-🔹 **Wilayah dengan intensitas terendah:** {bottom_prov_nama}  
-""")
+st.warning("📝 Analisis ini berbasis pemberitaan media, bukan berdasarkan data kejadian kriminal resmi.")

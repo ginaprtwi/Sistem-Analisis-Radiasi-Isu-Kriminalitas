@@ -1,8 +1,6 @@
 import pandas as pd
-import re 
-from datetime import datetime
 
-df = pd.read_excel("o.xlsx")
+df = pd.read_excel("raw_data.xlsx")
 
 #biar sama format judulnya
 df["judul"] = df["judul"].str.lower()
@@ -70,18 +68,6 @@ kata_sentimen = {
     ]
 }
 
-#kata kunci yg nanti nya bakal di drop
-kata_drop = [
-    "sosialisasi","edukasi","kampanye",
-    "kunjungan","peresmian","rapat","apel",
-    "pengamanan","siaga","lalu lintas","kecelakaan",
-    "banjir","longsor", "tiket konser", "lowongan kerja", "internasional"
-]
-
-sumber_drop = [
-    "detikfood", "detikHot", "detikFinance", "detikInet"
-]
-
 #kata kunci kota
 kotaxprov = {
     # DKI Jakarta
@@ -125,37 +111,47 @@ kotaxprov = {
     "jember": "Jawa Timur", "banyuwangi": "Jawa Timur", "madiun": "Jawa Timur",
     "ponorogo": "Jawa Timur", "tuban": "Jawa Timur", "lamongan": "Jawa Timur",
 
-    # Sumatera (umum media)
+    # Sumatera
     "sumut": "Sumatera Utara", "medan": "Sumatera Utara", "binjai": "Sumatera Utara",
     "siantar": "Sumatera Utara", "sumsel": "Sumatera Selatan", "palembang": "Sumatera Selatan",
     "sumbar": "Sumatera Barat", "padang": "Sumatera Barat", "bukittinggi": "Sumatera Barat",
+    "tobasa": "Sumatera Utara", "tapanuli": "Sumatera Utara",
+    "solok": "Sumatera Barat", "payakumbuh": "Sumatera Barat",
+    "lubuklinggau": "Sumatera Selatan", "karanganyar": "Sumatera Selatan",
 
     #riau
     "riau": "Riau","pekanbaru": "Riau","dumai": "Riau", "kepri": "Riau", "batam": "Riau", 
     "tanjungpinang": "Riau",
 
     #aceh
-    "aceh": "Aceh", "banda aceh": "Aceh", "lhokseumawe": "Aceh",
+    "aceh": "Aceh", "banda aceh": "Aceh", "lhokseumawe": "Aceh", "langsa": "Aceh", "aceh timur": "Aceh",
 
     # Bengkulu
     "bengkulu": "Bengkulu", "lebong": "Bengkulu", "rejang lebong": "Bengkulu", "curup": "Bengkulu",
     
     #lampung
-    "lampung": "Lampung", "bandar lampung": "Lampung",
+    "lampung": "Lampung", "bandar lampung": "Lampung",  "metro": "Lampung", "pringsewu": "Lampung",
 
     # Kalimantan
     "kaltim": "Kalimantan Timur", "balikpapan": "Kalimantan Timur", "samarinda": "Kalimantan Timur",
     "kalsel": "Kalimantan Selatan", "banjarmasin": "Kalimantan Selatan",
     "kalbar": "Kalimantan Barat", "pontianak": "Kalimantan Barat",
     "kalteng": "Kalimantan Tengah", "palangkaraya": "Kalimantan Tengah",
-    "kalut": "Kalimantan Utara", "tarakan": "Kalimantan Utara",
-
+    "kalut": "Kalimantan Utara", "tarakan": "Kalimantan Utara", 
+    "singkawang": "Kalimantan Barat", "ketapang": "Kalimantan Barat",
+    "kapuas": "Kalimantan Tengah", "kotawaringin": "Kalimantan Tengah",
+    "kutai": "Kalimantan Timur", "sangatta": "Kalimantan Timur",
+    "tanah laut": "Kalimantan Selatan", "baru": "Kalimantan Selatan",
+    
     # Sulawesi
     "sulsel": "Sulawesi Selatan", "makassar": "Sulawesi Selatan", "gowa": "Sulawesi Selatan",
     "sulteng": "Sulawesi Tengah", "palu": "Sulawesi Tengah", "sulut": "Sulawesi Utara",
     "manado": "Sulawesi Utara", "sultra": "Sulawesi Tenggara", "kendari": "Sulawesi Tenggara", 
     "sulbar": "Sulawesi Barat", "majene": "Sulawesi Barat", "polewali mandar": "Sulawesi Barat",
-
+    "konawe": "Sulawesi Tenggara", "baubau": "Sulawesi Tenggara",
+    "donggala": "Sulawesi Tengah", "banggai": "Sulawesi Tengah",
+    "parepare": "Sulawesi Selatan", "bone": "Sulawesi Selatan", "enrekang": "Sulawesi Selatan",
+    
     # Bali & Nusa Tenggara
     "bali": "Bali", "denpasar": "Bali",
     "badung": "Bali", "ntb": "Nusa Tenggara Barat", "mataram": "Nusa Tenggara Barat", 
@@ -164,60 +160,36 @@ kotaxprov = {
     # Maluku
     "maluku": "Maluku", "ambon": "Maluku", "tual": "Maluku", "namlea": "Maluku",
 
+    # Maluku Utara
+    "malut": "Maluku Utara", "tidore": "Maluku Utara", "ternate": "Maluku Utara",
+
     # Papua
     "papua": "Papua", "jayapura": "Papua", "merauke": "Papua",
 
+    # Papua Barat
+    "papua barat": "Papua Barat", "manokwari": "Papua Barat", "sorong": "Papua Barat",
+    
     # Jambi
     "jambi": "Jambi", "muaro jambi": "Jambi", "muara jambi": "Jambi", "batanghari": "Jambi",
     "tebo": "Jambi", "bungo": "Jambi", "tanjab barat": "Jambi", "tanjab timur": "Jambi",
     "tanjung jabung barat": "Jambi", "tanjung jabung timur": "Jambi", "sarolangun": "Jambi",
     "merangin": "Jambi", "kerinci": "Jambi", "sungai penuh": "Jambi",
 
-    # Maluku Utara
-    "malut": "Maluku Utara", "tidore": "Maluku Utara", "ternate": "Maluku Utara",
-    
-    # Papua Barat
-    "papua barat": "Papua Barat", "manokwari": "Papua Barat", "sorong": "Papua Barat",
-    
-    # Kalimantan Barat tambahan
-    "singkawang": "Kalimantan Barat", "ketapang": "Kalimantan Barat",
-    
-    # Kalimantan Tengah tambahan
-    "kapuas": "Kalimantan Tengah", "kotawaringin": "Kalimantan Tengah",
-    
-    # Kalimantan Timur tambahan
-    "kutai": "Kalimantan Timur", "sangatta": "Kalimantan Timur",
-    
-    # Kalimantan Selatan tambahan
-    "tanah laut": "Kalimantan Selatan", "baru": "Kalimantan Selatan",
-    
-    # Sulawesi Tenggara tambahan
-    "konawe": "Sulawesi Tenggara", "baubau": "Sulawesi Tenggara",
-    
-    # Sulawesi Tengah tambahan
-    "donggala": "Sulawesi Tengah", "banggai": "Sulawesi Tengah",
-    
-    # Sulawesi Selatan tambahan
-    "parepare": "Sulawesi Selatan", "bone": "Sulawesi Selatan", "enrekang": "Sulawesi Selatan",
-    
-    # Sumatera Utara tambahan
-    "tobasa": "Sumatera Utara", "tapanuli": "Sumatera Utara",
-    
-    # Sumatera Barat tambahan
-    "solok": "Sumatera Barat", "payakumbuh": "Sumatera Barat",
-    
-    # Sumatera Selatan tambahan
-    "lubuklinggau": "Sumatera Selatan", "karanganyar": "Sumatera Selatan",
-    
-    # Lampung tambahan
-    "metro": "Lampung", "pringsewu": "Lampung",
-    
-    # Aceh tambahan
-    "langsa": "Aceh", "aceh timur": "Aceh",
-
 }
 
+#kata kunci yg nanti nya bakal di drop
+kata_drop = [
+    "sosialisasi","edukasi","kampanye",
+    "kunjungan","peresmian","rapat","apel",
+    "pengamanan","siaga","lalu lintas","kecelakaan",
+    "banjir","longsor", "tiket konser", "lowongan kerja", "internasional"
+]
 
+sumber_drop = [
+    "detikfood", "detikHot", "detikFinance", "detikInet"
+]
+
+#hapus jam, ubah ke string
 df["tanggal"] = df["tanggal"].astype(str)
 df["tanggal"] = df["tanggal"].str.replace(r"^[A-Za-z]+,\s*", "", regex=True)
 df["tanggal"] = df["tanggal"].str.replace(r"\s+\d{1,2}:\d{2}.*$", "", regex=True)
@@ -228,10 +200,11 @@ bulan = {
     "Mei":"May", "Juni":"June", "Juli":"July", "Agustus":"August",
     "September":"September", "Oktober":"October", "November":"November", "Desember":"December"
 }
+
 for indo, eng in bulan.items():
     df["tanggal"] = df["tanggal"].str.replace(indo, eng, regex=True)
 
-# Parse tanggal
+# ambil tgl
 df["tanggal"] = pd.to_datetime(df["tanggal"], dayfirst=True, errors="coerce", infer_datetime_format=True)
 
 # Ambil tahun
@@ -240,13 +213,7 @@ df["tahun"] = df["tanggal"].dt.year
 # Overwrite format
 df["tanggal"] = df["tanggal"].dt.strftime("%d-%m-%Y")
 
-
-
 #buat kolom baru 
-df["kota"] = df["judul"].apply(
-    lambda x: next((k for k in kotaxprov.keys() if k in x), "lainnya")
-)
-
 df["provinsi"] = df["judul"].apply(
     lambda x: next((v for k, v in kotaxprov.items() if k in x), "Lainnya")
 )
@@ -274,4 +241,4 @@ df = df[(df["kota"] != "lainnya")].reset_index(drop=True)
 # drop thn selain 24 atau 25
 df = df[df["tahun"].isin([2024, 2025])].reset_index(drop=True)
 
-df.to_excel("xxx.xlsx", index=False)
+df.to_excel("fix_data.xlsx", index=False)

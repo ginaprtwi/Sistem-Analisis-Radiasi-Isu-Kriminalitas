@@ -8,7 +8,7 @@ st.set_page_config(layout="wide")
 st.title("Peta GIS")
 st.text("Peta Persebaran Pemberitaan Isu Kriminalitas berdasarkan Detik.com ")
 
-df = pd.read_excel("fix_data.xlsx")
+df = pd.read_excel("data/fix_data.xlsx")
 df = pd.DataFrame(df)
 
 #buat filter tahun sama provinsi
@@ -156,7 +156,12 @@ with col1:
     ).add_to(m)
 
     st_folium(m, width=900, height=600)
-
+    with st.container(border=True):
+        st.info("ℹ️ Temuan ini dapat digunakan untuk memahami distribusi spasial eksposur pemberitaan kriminal antar wilayah, "
+"mengidentifikasi wilayah dengan intensitas peliputan tinggi dan rendah, "
+"dasar analisis ketimpangan eksposur media antar provinsi, "
+"referensi pemantauan tren isu kriminal berdasarkan wilayah dominan."
+        )
 with col2:
     with st.container(border=True):
         st.subheader("Keterangan Kategori")
@@ -171,3 +176,4 @@ with col2:
         st.divider()
         st.subheader("Data")
         st.dataframe(df_map, width="stretch") 
+

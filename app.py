@@ -16,7 +16,7 @@ isu_kota_page = st.Page(
 sumber_page = st.Page(
     "pages/analisis_sumber.py",
     title="Sumber Pemberitaan",
-    icon=":material/monitoring:"
+    icon=":material/newspaper:"
 )
 
 sentimen_page = st.Page(

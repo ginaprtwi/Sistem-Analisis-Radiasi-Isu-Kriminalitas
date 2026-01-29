@@ -4,11 +4,13 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 st.set_page_config(layout="wide")
-st.title("Sumber dan Pola Pemberitaan")
-st.text("Visualisasi ini menggambarkan pola pemberitaan isu kriminalitas berdasarkan jenis, wilayah, dan sumber media.")
-df = pd.read_excel("fix_data.xlsx")
+st.title("Sumber Pemberitaan")
+st.text("Visualisasi ini menampilkan distribusi dan fokus pemberitaan isu kriminalitas berdasarkan sumber media dan jenis kriminal")
 
-#filter tahun
+# Load data
+df = pd.read_excel("data/fix_data.xlsx")
+
+# Filter tahun
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
 list_tahun = sorted(df["tahun"].dropna().astype(int).unique())
 
@@ -21,7 +23,7 @@ with st.container(border=True):
     )
 
 if not tahun_selected:
-    dftahun = df.iloc[0:0]  # dataframe kosong
+    dftahun = df.iloc[0:0]
     label_waktu = "Tidak ada tahun dipilih"
     st.warning("Silakan pilih minimal satu tahun untuk menampilkan data.", icon="⚠️")
 else:
@@ -33,69 +35,100 @@ else:
 
 total_kasus = len(dftahun)
 
-grouped_jenis = (dftahun.groupby("jenis_kriminal")["judul"].count().sort_values(ascending=False)
-    if not dftahun.empty else pd.Series(dtype=int))
-grouped_kota = (
-    dftahun.groupby("kota")["judul"].count().sort_values(ascending=False)
-    if not dftahun.empty else pd.Series(dtype=int))
+# Hitung jumlah per jenis & per sumber
+grouped_jenis = (
+    dftahun.groupby("jenis_kriminal")["judul"].count().sort_values(ascending=False)
+    if not dftahun.empty else pd.Series(dtype=int)
+)
 grouped_sumber = (
     dftahun.groupby("sumber")["judul"].count().sort_values(ascending=False)
-    if not dftahun.empty else pd.Series(dtype=int))
+    if not dftahun.empty else pd.Series(dtype=int)
+)
 
-kriminal_dominan = grouped_jenis.idxmax() if not grouped_jenis.empty else "-"
-top_kota_nama = grouped_kota.idxmax() if not grouped_kota.empty else "-"
-top_kota_val = grouped_kota.max() if not grouped_kota.empty else 0
-bottom_kota_nama = grouped_kota.idxmin() if not grouped_kota.empty else "-"
-
+# Sumber dominan
 sumber_dominan = grouped_sumber.idxmax() if not grouped_sumber.empty else "-"
 sumber_dominan_val = grouped_sumber.max() if not grouped_sumber.empty else 0
 persen_sumber = (sumber_dominan_val / total_kasus * 100) if total_kasus > 0 else 0
 
-#sumber
-st.subheader(f"Sumber Berita dan Pola Pemberitaan ({label_waktu})")
+# Top 5 sumber
+top5_sumber = grouped_sumber.head(5).index
+df_top5 = dftahun[dftahun["sumber"].isin(top5_sumber)]
 
-col_pie, col_bar = st.columns([2, 1])
+with st.container(border=True):
+    st.markdown(f"**Sumber dominan ({label_waktu})**")
+    col_pie, col_table = st.columns([2, 1])
 
-# PIE CHART
-with col_pie:
-    with st.container(border=True):
-        fig3, ax3 = plt.subplots(figsize=(7, 7))
-
+    # PIE CHART
+    with col_pie:
+        fig, ax = plt.subplots(figsize=(7, 7))
         if not grouped_sumber.empty:
             top_sumber = grouped_sumber.head(10)
             lainnya_val = grouped_sumber.iloc[10:].sum() if len(grouped_sumber) > 10 else 0
-
             if lainnya_val > 0:
                 top_sumber = pd.concat([top_sumber, pd.Series({"Lainnya": lainnya_val})])
-
-            ax3.pie(
+            ax.pie(
                 top_sumber.values,
                 labels=top_sumber.index,
                 autopct="%1.1f%%",
                 startangle=140,
                 colors=plt.cm.Paired(np.linspace(0, 1, len(top_sumber)))
             )
-            ax3.set_title("Distribusi Sumber Berita Kriminal")
+            ax.set_title("Distribusi Sumber Berita Kriminal")
         else:
-            ax3.text(0.5, 0.5, "Tidak ada data", ha="center", va="center")
+            ax.text(0.5,0.5,"Tidak ada data", ha="center", va="center")
+        st.pyplot(fig, use_container_width=True)
 
-        st.pyplot(fig3)
-
-#sumber berita
-with col_bar:
-    with st.container(border=True):
-        st.markdown("### Insight")
-
-        if total_kasus == 0:
-            st.markdown(
-                "Insight sumber berita belum dapat ditampilkan karena **tidak ada data yang dianalisis**."
+    # TABEL TOP 5 SUMBER X JENIS KRIMINAL
+    with col_table:
+        st.markdown("**Top 5 Sumber & Isu Kriminal**")
+        if not df_top5.empty:
+            pivot_df = df_top5.pivot_table(
+                index="sumber",
+                columns="jenis_kriminal",
+                values="judul",
+                aggfunc="count",
+                fill_value=0
             )
-        else:
-            st.markdown(f"""
-            📰 **Sumber dominan**: **{sumber_dominan}**  
-            📊 **Jumlah berita**: **{sumber_dominan_val}**  
-            📈 **Kontribusi**: sekitar **{persen_sumber:.1f}%** dari total berita
+            
+            # --- Urutkan kolom & baris berdasarkan jumlah ---
+            # Kolom = isu paling banyak ke paling sedikit
+            total_per_jenis = pivot_df.sum(axis=0)
+            pivot_df = pivot_df[total_per_jenis.sort_values(ascending=False).index]
+            # Baris = sumber paling banyak ke paling sedikit
+            total_per_sumber = pivot_df.sum(axis=1)
+            pivot_df = pivot_df.loc[total_per_sumber.sort_values(ascending=False).index]
+            
+            st.dataframe(pivot_df.style.format("{:.0f}"))
 
-            Dominasi ini menunjukkan bahwa **{sumber_dominan}** berperan signifikan
-            dalam penyebaran isu kriminalitas pada periode analisis.
-            """)
+            # --- HITUNG ISU TERATAS SESUAI SUMBER DOMINAN ---
+            if sumber_dominan in pivot_df.index:
+                row_dominan = pivot_df.loc[sumber_dominan]
+                isu_teratas = row_dominan.idxmax()
+                isu_teratas_val = row_dominan.max()
+                persen_isu = isu_teratas_val / row_dominan.sum() * 100
+            else:
+                isu_teratas = "-"
+                isu_teratas_val = 0
+                persen_isu = 0
+        else:
+            st.info("Tidak ada data untuk periode yang dipilih.")
+            isu_teratas = "-"
+            isu_teratas_val = 0
+            persen_isu = 0
+
+# --- Insight Sumber ---
+with st.container(border=True):
+    st.markdown(f"**Insight ({label_waktu})**")
+    if total_kasus == 0:
+        st.markdown(
+            "Tidak terdapat data yang dapat dianalisis karena **belum ada tahun yang dipilih**."
+        )
+    else:
+        st.info(f"Berdasarkan hasil analisis sumber pemberitaan terbanyak adalah **{sumber_dominan}** **({sumber_dominan_val}** berita, "
+            f"**{persen_sumber:.1f}%** dari total), dengan isu paling sering diberitakan adalah **{isu_teratas}** "
+            f"(**{isu_teratas_val}** berita, **{persen_isu:.1f}%** dari total di **{sumber_dominan}**). "
+            "Temuan ini menunjukkan dominasi media nasional dalam eksposur isu kriminal serta perbedaan fokus isu antar sumber media. "
+            "Hal ini berguna untuk mengetahui kecenderungan fokus isu tiap media, dasar pemantauan media dominan, dan potensi bias pemberitaan."
+        )
+
+st.warning("📝 Analisis ini berbasis pemberitaan media, bukan berdasarkan data kejadian kriminal resmi.")

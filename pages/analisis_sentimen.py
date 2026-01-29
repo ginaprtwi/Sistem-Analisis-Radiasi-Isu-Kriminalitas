@@ -7,46 +7,39 @@ st.set_page_config(layout="wide")
 st.title("Sentimen Pemberitaan")
 st.text("Visualisasi ini menampilkan distribusi sentimen berita kriminalitas berdasarkan tahun dan jenis isu.")
 
-df = pd.read_excel("fix_data.xlsx")
+# --- Load Data ---
+df = pd.read_excel("data/fix_data.xlsx")
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
 
-# List filter
+# --- Filter Tahun ---
 list_tahun = sorted(df["tahun"].dropna().astype(int).unique())
-
-# Container filter
 with st.container(border=True):
-    col1, col2 = st.columns([2, 4])
-    
+    col1, col2 = st.columns([2,4])
     with col1:
-        # Tahun pakai pills
         tahun_selected = st.pills(
             "Pilih Tahun",
             options=list_tahun,
             default=list_tahun,
             selection_mode="multi"
         )
-    
     with col2:
-        # Filter jenis isu pakai popover
-        list_jenis = sorted(df[df["tahun"].isin(tahun_selected)]["jenis_kriminal"].dropna().unique()) \
-            if len(tahun_selected) > 0 else []
-        
+        list_jenis = sorted(df[df["tahun"].isin(tahun_selected)]["jenis_kriminal"].dropna().unique()) if tahun_selected else []
         with st.popover("Pilih Jenis Isu", width="stretch"):
             jenis_selected = st.multiselect(
                 "Pilih Jenis Isu",
                 options=list_jenis,
-                default=list_jenis, 
-                key="jenis_selected",
+                default=list_jenis,
+                key="jenis_selected"
             )
-            st.button("Semua Isu",on_click=lambda: st.session_state.update({"jenis_selected": list(list_jenis)}))
+            st.button("Semua Isu", on_click=lambda: st.session_state.update({"jenis_selected": list(list_jenis)}))
 
-# Filter data sesuai pilihan
+# --- Filter Data Sesuai Pilihan ---
 df_filtered = df[
-    (df["tahun"].isin(tahun_selected)) &
+    (df["tahun"].isin(tahun_selected)) & 
     (df["jenis_kriminal"].isin(jenis_selected))
-] if len(tahun_selected) > 0 else pd.DataFrame()
+] if tahun_selected else pd.DataFrame()
 
-# Label waktu
+# --- Label Waktu ---
 if not tahun_selected:
     label_waktu = "Tidak ada tahun dipilih"
 elif len(tahun_selected) == 1:
@@ -54,62 +47,90 @@ elif len(tahun_selected) == 1:
 else:
     label_waktu = f"Periode {min(tahun_selected)}–{max(tahun_selected)}"
 
-# Total berita
 total_berita = len(df_filtered)
 
-# PIE & BAR CHART SEJAJAR
+# --- Pie & Bar Chart ---
 with st.container(border=True):
+    with st.expander("ℹ️ Keterangan Sentimen Berita"):
+        st.markdown("""
+**Negatif:** Menyoroti dampak buruk atau keresahan akibat kriminalitas.  
+**Netral:** Bersifat informatif tanpa penekanan emosi.  
+**Positif:** Menekankan keberhasilan pengungkapan atau tindakan aparat.  
+""")
+    st.markdown(f"**Proporsi Sentimen & Isu ({label_waktu})**")
     col1, col2 = st.columns(2)
 
-    # Pie chart
+    # --- Pie Chart ---
     with col1:
-        st.subheader(f"Proporsi Sentimen ({label_waktu})")
-        fig1, ax1 = plt.subplots(figsize=(6,6))
+        fig1, ax1 = plt.subplots(figsize=(7,7))
         if not df_filtered.empty:
-            sentimen_counts_all = df_filtered["sentimen"].value_counts()
-            sentimen_persen_all = df_filtered["sentimen"].value_counts(normalize=True) * 100
-            dominant_sentimen_all = sentimen_counts_all.idxmax()
-    
+            sentimen_counts = df_filtered["sentimen"].value_counts()
+            sentimen_persen = sentimen_counts / sentimen_counts.sum() * 100
+            labels_sorted = sentimen_persen.index
             ax1.pie(
-                sentimen_persen_all,
-                labels=sentimen_persen_all.index,
+                sentimen_persen,
+                labels=labels_sorted,
                 autopct="%1.1f%%",
-                startangle=140,
-                colors=plt.cm.Paired(np.linspace(0,1,len(sentimen_persen_all)))
+                startangle=140
+                # Tidak pakai colors → default matplotlib
             )
             ax1.set_title("Distribusi Sentimen Keseluruhan")
         else:
-            dominant_sentimen_all = "-"
-            ax1.text(0.5, 0.5, "Tidak ada data", ha="center", va="center")
-        st.pyplot(fig1)
+            ax1.text(0.5,0.5,"Tidak ada data", ha="center", va="center")
+        st.pyplot(fig1, use_container_width=True)
 
-    # Bar chart
+    # --- Bar Chart per Isu ---
     with col2:
-        st.subheader(f"Jumlah Berita per Isu ({label_waktu})")
         if not df_filtered.empty:
-            grouped_isu_sentimen = df_filtered.groupby(["jenis_kriminal", "sentimen"])["judul"].count().unstack(fill_value=0)
-    
+            grouped_isu_sentimen = df_filtered.groupby(["jenis_kriminal","sentimen"])["judul"].count().unstack(fill_value=0)
+            grouped_isu_sentimen["total"] = grouped_isu_sentimen.sum(axis=1)
+            grouped_isu_sentimen = grouped_isu_sentimen.sort_values(by="total", ascending=False).drop(columns="total")
+
             fig2, ax2 = plt.subplots(figsize=(8,6))
-            grouped_isu_sentimen.plot(kind="bar", stacked=True, ax=ax2, colormap="Paired")
+            grouped_isu_sentimen.plot(
+                kind="bar",
+                stacked=True,
+                ax=ax2
+                # Tidak pakai color → default matplotlib
+            )
             ax2.set_ylabel("Jumlah Berita")
             ax2.set_xlabel("Jenis Isu")
             ax2.set_title("Jumlah Berita per Sentimen untuk Setiap Isu")
             plt.xticks(rotation=45, ha="right")
+            plt.tight_layout()
             st.pyplot(fig2)
         else:
             st.info("Tidak ada data untuk ditampilkan.")
 
-# Insight di bawah chart
-st.subheader("Insight")
-if total_berita == 0:
-    st.markdown("Insight belum dapat ditampilkan karena **tidak ada data yang dianalisis**.")
-else:
-    # Top isu
-    top_isi = grouped_isu_sentimen.sum(axis=1).idxmax()
-    top_isi_val = grouped_isu_sentimen.sum(axis=1).max()
+# --- Insight Berdasarkan Sentimen Dominan ---
+with st.container(border=True):
+    st.markdown(f"**Insight ({label_waktu})**")
+    if total_berita == 0:
+        st.markdown("Tidak terdapat data yang dapat dianalisis karena **belum ada tahun atau isu yang dipilih**.")
+    else:
+        # Sentimen dominan
+        sentimen_counts = df_filtered["sentimen"].value_counts()
+        dominant_sentimen = sentimen_counts.idxmax()
+        dominant_sentimen_val = sentimen_counts.max()
+        persen_sentimen = dominant_sentimen_val / total_berita * 100
 
-    st.markdown(f"""
-- Fokus monitoring pada **{top_isi}** karena paling banyak diberitakan.  
-- Jika **negatif lebih tinggi**, perlu perhatian atau intervensi terkait isu kriminal tersebut.  
-- Jika **positif lebih tinggi**, bisa digunakan sebagai indikasi penegakan hukum atau keberhasilan tindakan polisi.
-""")
+        # Filter berita sesuai sentimen dominan
+        df_sentimen_dom = df_filtered[df_filtered["sentimen"] == dominant_sentimen]
+        isu_counts = df_sentimen_dom["jenis_kriminal"].value_counts()
+        isu_teratas = isu_counts.idxmax()
+        isu_teratas_val = isu_counts.max()
+        persen_isu = isu_teratas_val / len(df_sentimen_dom) * 100
+        isu_terendah = isu_counts.idxmin()
+        isu_terendah_val = isu_counts.min()
+        persen_isu_terendah = isu_terendah_val / len(df_sentimen_dom) * 100
+
+        st.info(
+            f"ℹ️ Berdasarkan analisis pada **{label_waktu}**, Sentimen yang paling dominan adalah **{dominant_sentimen}** "
+            f"(**{dominant_sentimen_val}** berita, **{persen_sentimen:.1f}%** dari total). "
+            f"Isu kriminal yang paling sering diberitakan dalam sentimen ini adalah **{isu_teratas}** "
+            f"(**{isu_teratas_val}** berita, **{persen_isu:.1f}%** dari total sentimen dominan). "
+            "Temuan ini menunjukan bahwa pemberitaan kriminal lebih banyak menyoroti kerugian dibanding proses penyelesaian kasus. "
+            "Hal ini berguna untuk memahami kecenderungan, keseimbangan dan persepsi publik terhadap isu kriminalitas."
+        )
+
+st.warning("📝 Analisis ini berbasis pemberitaan media, bukan berdasarkan data kejadian kriminal resmi.")
