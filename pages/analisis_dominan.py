@@ -5,8 +5,8 @@ import numpy as np
 
 st.set_page_config(layout="wide")
 st.title("Isu & Wilayah Dominan")
-st.text("Visualisasi ini menampilkan isu kriminalitas dan wilayah dengan jumlah pemberitaan terbanyak.")
-df = pd.read_excel("data/fix_dataa.xlsx")
+st.text("Visualisasi ini membantu menentukan prioritas isu kriminal dan wilayah yang perlu dipantau berdasarkan intensitas pemberitaann kriminalitas Detik.com")
+df = pd.read_excel("fix_data.xlsx")
 
 #filter tahun
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
@@ -37,21 +37,16 @@ total_kasus = len(dftahun)
 
 grouped_jenis = (dftahun.groupby("jenis_kriminal")["judul"].count().sort_values(ascending=False)
     if not dftahun.empty else pd.Series(dtype=int))
-grouped_kota = (
-    dftahun.groupby("kota")["judul"].count().sort_values(ascending=False)
-    if not dftahun.empty else pd.Series(dtype=int))
-grouped_sumber = (
-    dftahun.groupby("sumber")["judul"].count().sort_values(ascending=False)
+grouped_prov = (
+    dftahun.groupby("provinsi")["judul"].count().sort_values(ascending=False)
     if not dftahun.empty else pd.Series(dtype=int))
 
 kriminal_dominan = grouped_jenis.idxmax() if not grouped_jenis.empty else "-"
-top_kota_nama = grouped_kota.idxmax() if not grouped_kota.empty else "-"
-top_kota_val = grouped_kota.max() if not grouped_kota.empty else 0
-bottom_kota_nama = grouped_kota.idxmin() if not grouped_kota.empty else "-"
+top_prov_nama = grouped_prov.idxmax() if not grouped_prov.empty else "-"
+top_prov_val = grouped_prov.max() if not grouped_prov.empty else 0
+bottom_prov_nama = grouped_prov.idxmin() if not grouped_prov.empty else "-"
 
-sumber_dominan = grouped_sumber.idxmax() if not grouped_sumber.empty else "-"
-sumber_dominan_val = grouped_sumber.max() if not grouped_sumber.empty else 0
-persen_sumber = (sumber_dominan_val / total_kasus * 100) if total_kasus > 0 else 0
+
 
 
 st.subheader(f"Grafik Isu Kriminal ({label_waktu})")
@@ -83,25 +78,25 @@ with st.container(border=True):
         plt.tight_layout()
         st.pyplot(fig1)
 
-#line kota top 10
+#line prov top 10
     with col2:
         fig2, ax2 = plt.subplots(figsize=(10, 7))
 
-        if not grouped_kota.empty:
-            top_10_cities = grouped_kota.head(10).index
-            df_top = dftahun[dftahun["kota"].isin(top_10_cities)]
+        if not grouped_prov.empty:
+            top_10_p = grouped_prov.head(10).index
+            df_top = dftahun[dftahun["provinsi"].isin(top_10_p)]
 
-            df_pivot_kota = df_top.pivot_table(
-                index="kota",
+            df_pivot_prov = df_top.pivot_table(
+                index="provinsi",
                 columns="tahun",
                 values="judul",
                 aggfunc="count"
             ).fillna(0)
 
-            for col in df_pivot_kota.columns:
+            for col in df_pivot_prov.columns:
                 ax2.plot(
-                    df_pivot_kota.index,
-                    df_pivot_kota[col],
+                    df_pivot_prov.index,
+                    df_pivot_prov[col],
                     marker="o",
                     label=str(col)
                 )   
@@ -125,9 +120,11 @@ with st.container(border=True):
         )
     else:
         st.markdown(f"""
-Berdasarkan hasil analisis pada **{label_waktu}**, tercatat **{total_kasus} isu kriminalitas** yang diberitakan oleh Detik.com.  
+Berdasarkan hasil analisis pada **{label_waktu}**, tercatat **{total_kasus} isu kriminalitas** yang diberitakan oleh Detik.com.  s
 
-🔹 **Jenis kriminal dominan:** {kriminal_dominan} → isu ini bisa menjadi fokus pemantauan.  
-🔹 **Wilayah paling sering diberitakan:** {top_kota_nama} ({top_kota_val} isu) → prioritas analisis wilayah.  
-🔹 **Wilayah dengan intensitas terendah:** {bottom_kota_nama} → pantau secara rutin.  
+🔹 **Jenis kriminal dominan:** {kriminal_dominan} 
+
+🔹 **Wilayah paling sering diberitakan:** {top_prov_nama} ({top_prov_val} isu) 
+
+🔹 **Wilayah dengan intensitas terendah:** {bottom_prov_nama}  
 """)

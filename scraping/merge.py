@@ -18,7 +18,7 @@ for file in excel_files:
 merged_df = pd.concat(all_df, ignore_index=True)
 
 # Simpan ke Excel baru
-merged_file = os.path.join(folder_path, "merged_data.xlsx")
+merged_file = os.path.join(folder_path, "raw_data.xlsx")
 merged_df.to_excel(merged_file, index=False, engine="openpyxl")
 
 print(f"✅ Semua file berhasil digabung. Tersimpan di: {merged_file}")

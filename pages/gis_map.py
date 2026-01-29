@@ -8,7 +8,7 @@ st.set_page_config(layout="wide")
 st.title("Peta GIS")
 st.text("Peta Persebaran Pemberitaan Isu Kriminalitas berdasarkan Detik.com ")
 
-df = pd.read_excel("data/fix_dataa.xlsx")
+df = pd.read_excel("fix_data.xlsx")
 df = pd.DataFrame(df)
 
 #buat filter tahun sama provinsi

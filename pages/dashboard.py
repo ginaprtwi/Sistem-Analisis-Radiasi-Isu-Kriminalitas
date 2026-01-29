@@ -4,10 +4,10 @@ import pandas as pd
 st.title("Dashboard")
 st.text("Ringkasan isu kriminal yang sering diberitakan di Indonesia berdasarkan media online Detik.com periode 2024-2025")
 
-df = pd.read_excel("data/fix_dataa.xlsx")
+df = pd.read_excel("fix_data.xlsx")
 
 jenis_terbanyak = df["jenis_kriminal"].value_counts().idxmax().capitalize()
-kota_terbanyak = df["kota"].value_counts().idxmax().capitalize()
+prov_terbanyak = df["provinsi"].value_counts().idxmax().capitalize()
 sumber_teraktif = df["sumber"].value_counts().idxmax()
 
 #hitung tren isu 2024-2025
@@ -44,7 +44,7 @@ with col2:
 with col3:
     with st.container(border=True):
         st.caption("Wilayah Dominan")
-        st.markdown(f"**{kota_terbanyak}**")
+        st.markdown(f"**{prov_terbanyak}**")
 
 with col4:
     with st.container(border=True):

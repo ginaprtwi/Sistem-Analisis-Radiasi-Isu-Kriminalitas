@@ -6,7 +6,7 @@ import numpy as np
 st.set_page_config(layout="wide")
 st.title("Sumber dan Pola Pemberitaan")
 st.text("Visualisasi ini menggambarkan pola pemberitaan isu kriminalitas berdasarkan jenis, wilayah, dan sumber media.")
-df = pd.read_excel("data/fix_dataa.xlsx")
+df = pd.read_excel("fix_data.xlsx")
 
 #filter tahun
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
@@ -54,7 +54,7 @@ persen_sumber = (sumber_dominan_val / total_kasus * 100) if total_kasus > 0 else
 #sumber
 st.subheader(f"Sumber Berita dan Pola Pemberitaan ({label_waktu})")
 
-col_pie, col_insight = st.columns([2, 1])
+col_pie, col_bar = st.columns([2, 1])
 
 # PIE CHART
 with col_pie:
@@ -82,7 +82,7 @@ with col_pie:
         st.pyplot(fig3)
 
 #sumber berita
-with col_insight:
+with col_bar:
     with st.container(border=True):
         st.markdown("### Insight")
 

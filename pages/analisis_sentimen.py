@@ -7,8 +7,7 @@ st.set_page_config(layout="wide")
 st.title("Sentimen Pemberitaan")
 st.text("Visualisasi ini menampilkan distribusi sentimen berita kriminalitas berdasarkan tahun dan jenis isu.")
 
-# Load data
-df = pd.read_excel("data/fix_dataa.xlsx")
+df = pd.read_excel("fix_data.xlsx")
 df["tahun"] = pd.to_numeric(df["tahun"], errors="coerce")
 
 # List filter
