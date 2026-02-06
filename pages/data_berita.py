@@ -5,5 +5,6 @@ df = pd.read_excel("data/fix_data.xlsx")
 
 st.title("Data Berita")
 st.text("Seluruh data yang diambil dari media Detik.com.")
+st.markdown("Sumber: [Detik.com](https://www.detik.com/)")
 
 st.dataframe(df)

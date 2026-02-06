@@ -5,7 +5,7 @@ import numpy as np
 
 st.set_page_config(layout="wide")
 st.title("Sentimen Pemberitaan")
-st.text("Visualisasi ini menampilkan distribusi sentimen berita kriminalitas berdasarkan tahun dan jenis isu.")
+st.text("Visualisasi ini bertujuan untuk menentukan kecenderungan persepsi publik mengenai isu kriminalitas.")
 
 df = pd.read_excel("data/fix_data.xlsx")
 
@@ -80,6 +80,8 @@ with st.container(border=True):
         )
         ax1.set_title("Distribusi Sentimen Keseluruhan (Semua Isu)")
         st.pyplot(fig1, use_container_width=True)
+        st.caption("Proporsi sentimen menunjukkan tren dominan negatif. Penyebaran berita sebaiknya seimbang agar publik tidak mudah panik.")
+
 
     with col2:
         grouped_isu_sentimen = (

@@ -5,7 +5,7 @@ from streamlit_folium import st_folium
 
 st.set_page_config(layout="wide")
 st.title("Peta GIS")
-st.text("Peta persebaran isu kriminalitas berdasarkan intensitas pemberitaan.")
+st.text("Peta persebaran isu kriminalitas yang bertujuan untuk mengetahui wilayah yang jarang terekspos oleh media.")
 
 df = pd.read_excel("data/fix_data.xlsx")
 df = pd.DataFrame(df)
@@ -75,8 +75,8 @@ if len(prov_summary) > 0:
             st.markdown(  
                 f"""
                 Pada tahun **{tahun_selected[0]}** tercatat **{total_kasus} isu kriminalitas**.
-                Provinsi paling rawan adalah **{prov_max['provinsi']} ({prov_max['jumlah']} isu)**,
-                sementara **{prov_min['provinsi']}** menjadi provinsi dengan isu terendah.
+                Provinsi paling sering diberitakan adalah **{prov_max['provinsi']} ({prov_max['jumlah']} isu)**,
+                sementara **{prov_min['provinsi']}** menjadi provinsi yang jarang diberitakan.
                 Jenis kriminal paling dominan adalah **{kriminal_dominan}**.
                 """
             )
@@ -86,8 +86,8 @@ if len(prov_summary) > 0:
             st.markdown(  
                 f"""
                 Selama periode ini tercatat **{total_kasus} isu kriminalitas**.
-                Wilayah paling rawan adalah **{prov_max['provinsi']}**,
-                sedangkan **{prov_min['provinsi']}** relatif paling aman.
+                Wilayah paling sering diberitakan adalah **{prov_max['provinsi']}**,
+                sedangkan **{prov_min['provinsi']}** relatif paling jarang diberitakan.
                 Kriminalitas didominasi oleh **{kriminal_dominan}**.
                 """
             )

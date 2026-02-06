@@ -5,7 +5,7 @@ import numpy as np
 
 st.set_page_config(layout="wide")
 st.title("Sumber Pemberitaan")
-st.text("Distribusi isu kriminalitas berdasarkan sumber media dari berbagai subdomain Detik.com.")
+st.text("Visualisasi ini bertujuan untuk mengetahui penyebaran sumber media dan mengetahui bias pemberitaan.")
 
 
 df = pd.read_excel("data/fix_data.xlsx")
@@ -47,7 +47,7 @@ top10_sumber = grouped_sumber.head(10).index
 df_top10 = dftahun[dftahun["sumber"].isin(top10_sumber)]
 
 with st.container(border=True):
-    st.markdown(f"**Sumber dominan ({label_waktu})**")
+    st.markdown(f"**Dominasi Sumber Berita Kriminal ({label_waktu})**")
     col_pie, col_table = st.columns([2, 1])
     with col_pie:
         fig, ax = plt.subplots(figsize=(7, 7))
@@ -63,13 +63,14 @@ with st.container(border=True):
                 startangle=140,
                 colors=plt.cm.Paired(np.linspace(0, 1, len(top_sumber)))
             )
-            ax.set_title("Distribusi Sumber Berita Kriminal")
+            ax.set_title("Distribusi Subdomain Detik.com")
         else:
             ax.text(0.5,0.5,"Tidak ada data", ha="center", va="center")
         st.pyplot(fig, use_container_width=True)
+        st.caption("Dominasi sumber tertentu menunjukkan perlunya pemanfaatan subdomain lain agar penyebaran informasi lebih merata.")
 
     with col_table:
-        st.markdown("**Distribusi Isu Kriminal per Sumber**")
+        st.markdown("**Pola Isu Dominan per Subdomain**")
         if not df_top10.empty:
             pivot_df = df_top10.pivot_table(
                 index="sumber",
@@ -104,6 +105,7 @@ with st.container(border=True):
             isu_teratas = "-"
             isu_teratas_val = 0
             persen_isu = 0
+        st.caption("Ketimpangan kontribusi sumber menunjukkan potensi bias pemberitaan jika hanya mengandalkan subdomain dominan.")
 
 #Insight
 with st.container(border=True):

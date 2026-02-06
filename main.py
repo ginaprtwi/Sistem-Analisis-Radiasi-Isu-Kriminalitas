@@ -9,7 +9,7 @@ dashboard_page = st.Page(
 
 isu_kota_page = st.Page(
     "pages/analisis_dominan.py",
-    title="Isu & Wilayah Dominan",
+    title="Isu & Eksposur Wilayah",
     icon=":material/stacks:"
 )
 

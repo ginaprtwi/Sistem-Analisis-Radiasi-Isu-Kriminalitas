@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 st.set_page_config(layout="wide")
-st.title("Isu & Wilayah Dominan")
-st.text("Visualisasi ini menunjukkan isu kriminal dan wilayah dengan intensitas pemberitaan tertinggi.")
+st.title("Isu & Eksposur Wilayah")
+st.text("Visualisasi ini bertujuan untuk menentukan prioritas isu dan wilayah yang jarang terekspos media.")
 
 df = pd.read_excel("data/fix_data.xlsx")
 
@@ -43,10 +43,11 @@ top_prov_nama = grouped_prov.idxmax() if not grouped_prov.empty else "-"
 top_prov_val = grouped_prov.max() if not grouped_prov.empty else 0
 bottom_prov_nama = grouped_prov.idxmin() if not grouped_prov.empty else "-"
 
-
 with st.container(border=True):
-    st.markdown(f"**Isu & Wilayah Dominan({label_waktu})**")
+    st.markdown(f"**Isu Dominan & Eksposur Wilayah({label_waktu})**")
     col1, col2 = st.columns(2)
+    
+    # Chart Distribusi Jenis Kriminal
     with col1:
         fig1, ax1 = plt.subplots(figsize=(10, 7))
         if not dftahun.empty:
@@ -57,7 +58,6 @@ with st.container(border=True):
                 aggfunc="count"
             ).fillna(0)
 
-            #urutkan
             df_pivot['total'] = df_pivot.sum(axis=1)
             df_pivot = df_pivot.sort_values(by='total', ascending=False).drop(columns='total')
 
@@ -71,44 +71,52 @@ with st.container(border=True):
                 color=warna
             )
 
-        ax1.set_title("Distribusi Jenis Kriminal")
+        ax1.set_title("Isu Kriminalitas paling dominan")
         ax1.set_ylabel("Jumlah Isu")
         plt.xticks(rotation=45, ha="right")
         plt.tight_layout()
         st.pyplot(fig1, use_container_width=False)
-
+        st.caption("Isu dengan frekuensi tertinggi menunjukkan fokus utama pemberitaan kriminal.")
+    
+    # Chart Top 5 vs Bottom 5 Wilayah (buat cek ketimpangan)
     with col2:
         fig2, ax2 = plt.subplots(figsize=(10, 7))
-        #buat urutin line grafik nya
-        top_10_p = grouped_prov.head(10).sort_values(ascending=False).index
-        df_top = dftahun[dftahun["provinsi"].isin(top_10_p)]
         if not grouped_prov.empty:
-            df_pivot_prov = df_top.pivot_table(
+            top5_prov = grouped_prov.head(5).index.tolist()
+            bottom5_prov = grouped_prov.tail(5).index.tolist()
+            prov_list = top5_prov + bottom5_prov
+
+            # Pivot: index = provinsi, columns = tahun, values = jumlah isu
+            df_pivot_prov = dftahun[dftahun["provinsi"].isin(prov_list)].pivot_table(
                 index="provinsi",
                 columns="tahun",
                 values="judul",
                 aggfunc="count"
-            ).fillna(0)
+            ).reindex(prov_list).fillna(0)
 
             warna_line = plt.cm.Blues(np.linspace(0.4, 0.8, len(df_pivot_prov.columns)))
-            for i, col in enumerate(df_pivot_prov.columns):
+
+            # Plot tiap tahun
+            for i, tahun in enumerate(df_pivot_prov.columns):
                 ax2.plot(
                     df_pivot_prov.index,
-                    df_pivot_prov[col],
+                    df_pivot_prov[tahun],
                     marker="o",
                     color=warna_line[i],
-                    label=str(col)
+                    label=str(tahun)
                 )
 
-            ax2.legend(title="Tahun")
-            ax2.set_title("Top 10 Wilayah dengan Isu Kriminal Terbanyak")
+            ax2.legend(title="Tahun", loc='upper right')
+            ax2.set_title("Ketimpangan Eksposur Media antar Wilayah")
             ax2.set_ylabel("Jumlah Isu")
-            plt.xticks(rotation=45, ha="right")
+            ax2.set_xlabel("Provinsi")
             ax2.grid(True, linestyle="--", alpha=0.5)
+            plt.xticks(rotation=45, ha="right")
             plt.tight_layout()
             st.pyplot(fig2, use_container_width=False)
+            st.caption("Grafik menunjukkan ketimpangan signifikan antara wilayah dengan eksposur tinggi dan rendah, di mana wilayah dengan nilai terendah berpotensi terabaikan.")
 
-#Insight
+# Insight
 with st.container(border=True):
     st.markdown(f"**Insight ({label_waktu})**")
     if total_kasus == 0:
@@ -120,7 +128,7 @@ with st.container(border=True):
     f"ℹ️ Berdasarkan hasil analisis pada **{label_waktu}**, tercatat **{total_kasus}** isu kriminalitas yang diberitakan oleh **Detik.com**. "
     f"Isu kriminal yang paling dominan adalah **{kriminal_dominan}**, dengan **{top_prov_nama}** sebagai wilayah yang paling sering diberitakan "
     f"**({top_prov_val}** isu), sementara **{bottom_prov_nama}** memiliki intensitas pemberitaan terendah. "
-    "**Temuan** ini berguna untuk mengidentifikasi **pola dominasi isu** dan **wilayah dalam pemberitaan kriminalitas**, terutama untuk wilayah yang **jarang terekspos media**."
+    "Temuan ini menunjukkan adanya ketimpangan eksposur media, sehingga wilayah dengan pemberitaan rendah perlu mendapat perhatian lebih dalam analisis dan pengambilan keputusan."
 )
 
 st.warning("📝 Analisis ini berbasis pemberitaan media, bukan berdasarkan data kejadian kriminal resmi.")
