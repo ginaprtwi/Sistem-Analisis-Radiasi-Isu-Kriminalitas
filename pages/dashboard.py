@@ -3,7 +3,7 @@ import pandas as pd
 
 st.set_page_config(layout="wide")
 st.title("Dashboard")
-st.text("Ringkasan Pemberitaan Kriminalitas: Prioritas Isu, Wilayah, dan Sumber Media (2024–2025) berdasarkan media online Detik.com")
+st.text("Ringkasan Pemberitaan Kriminalitas: Menentukan Prioritas Isu, Wilayah, Sumber, dan Sentimen Pemberitaan (2024–2025) berdasarkan media online Detik.com")
 
 df = pd.read_excel("data/fix_data.xlsx")
 
